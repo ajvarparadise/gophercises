@@ -10,15 +10,23 @@ package main
 
 import (
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
 )
 
+var filename string
+
+func init() {
+	flag.StringVar(&filename, "filename", "./problems.csv", "define relative path to custom csv questionare file")
+	flag.Parse()
+}
+
 func readFile() *csv.Reader {
 	// set args for examples sake
-	f, err := os.Open("problems.csv")
+	f, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
