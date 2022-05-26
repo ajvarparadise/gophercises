@@ -29,6 +29,9 @@ func readFile() *csv.Reader {
 func askQuestions() {
 	// read one row at a time
 	r := readFile()
+	var correctQuesses = 0
+	var incorrectQuess = 0
+
 	for {
 		problem, err := r.Read()
 		if err == io.EOF {
@@ -42,11 +45,17 @@ func askQuestions() {
 
 		var quess string
 		// Taking input from user
-		fmt.Printf("what is %s \n", question)
+		fmt.Printf("question: %s \n", question)
 		fmt.Println("answer: ")
 		fmt.Scanln(&quess)
-		fmt.Printf("Question: %s -> answer: %v -> quess: %v\n", question, answer, quess)
+		if quess == answer {
+			correctQuesses++
+		} else {
+			incorrectQuess++
+		}
+		fmt.Println()
 	}
+	fmt.Printf("correct: %d, incorrect: %d \n\n", correctQuesses, incorrectQuess)
 }
 
 func main() {
