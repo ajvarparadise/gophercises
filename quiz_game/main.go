@@ -37,53 +37,66 @@ func readFile() *csv.Reader {
 	return r
 }
 
-func getNextQuestion(r *csv.Reader) (string, string, error) {
+func getNextQuestion(r *csv.Reader) (string, string, bool) {
 	problem, err := r.Read()
 	if err == io.EOF {
-		return "", "", err
+		// end game and show score
+		return "", "", true
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
 	question := problem[0]
 	answer := problem[1]
-	return question, answer, err
+	return question, answer, false
+}
+
+func printQuestion(question string) {
+	fmt.Printf("question: %s \n", question)
+	fmt.Println("answer: ")
+}
+
+func manageScore(guess string, answer string, correctGuesses int, incorrectGuess int) (int, int) {
+	if guess == answer {
+		correctGuesses++
+	} else {
+		incorrectGuess++
+	}
+	return correctGuesses, incorrectGuess
+}
+
+func printScore(correctGuesses int, incorrectGuess int) {
+	fmt.Printf("correct: %d, incorrect: %d \n\n", correctGuesses, incorrectGuess)
+}
+
+func StopAndSummariseGame(correctGuesses int, incorrectGuess int) {
+	printScore(correctGuesses, incorrectGuess)
+	os.Exit(0)
 }
 
 func askQuestions() {
-	// read one row at a time
-	var correctQuesses = 0
-	var incorrectQuess = 0
+	var correctGuesses = 0
+	var incorrectGuess = 0
 	var start string
-	var quess string
+	var guess string
 	r := readFile()
 
 	fmt.Printf("Hi there, press enter to start the game: \n")
 	fmt.Scanln(&start)
-	for {
-		question, answer, err := getNextQuestion(r)
-		if err != nil {
-			os.Exit(0)
-		}
-		fmt.Printf("question: %s \n", question)
-		fmt.Println("answer: ")
 
-		gameTimer := time.NewTimer(3000 * time.Millisecond)
-		go func() {
-			println("go func")
-			<-gameTimer.C
-			gameTimer.Stop()
-			fmt.Println("Time expired")
-			fmt.Printf("correct: %d, incorrect: %d \n\n", correctQuesses, incorrectQuess)
-			os.Exit(0)
-		}()
-		fmt.Scanln(&quess)
-		gameTimer.Reset(3000 * time.Millisecond)
-		if quess == answer {
-			correctQuesses++
-		} else {
-			incorrectQuess++
+	for {
+		question, answer, done := getNextQuestion(r)
+		if done {
+			StopAndSummariseGame(correctGuesses, incorrectGuess)
 		}
+		printQuestion(question)
+
+		t := time.AfterFunc(3*time.Second, func() {
+			StopAndSummariseGame(correctGuesses, incorrectGuess)
+		})
+		fmt.Scanln(&guess)
+		t.Reset(3 * time.Second)
+		correctGuesses, incorrectGuess = manageScore(guess, answer, correctGuesses, incorrectGuess)
 		fmt.Println()
 	}
 }
