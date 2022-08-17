@@ -92,7 +92,6 @@ func askQuestions() {
 			StopAndSummariseGame(correctGuesses, incorrectGuess)
 		}
 		printQuestion(question)
-
 		fmt.Scanln(&guess)
 		t.Reset(3 * time.Second)
 		correctGuesses, incorrectGuess = manageScore(guess, answer, correctGuesses, incorrectGuess)
