@@ -83,7 +83,9 @@ func askQuestions() {
 
 	fmt.Printf("Hi there, press enter to start the game: \n")
 	fmt.Scanln(&start)
-
+	t := time.AfterFunc(3*time.Second, func() {
+		StopAndSummariseGame(correctGuesses, incorrectGuess)
+	})
 	for {
 		question, answer, done := getNextQuestion(r)
 		if done {
@@ -91,9 +93,6 @@ func askQuestions() {
 		}
 		printQuestion(question)
 
-		t := time.AfterFunc(3*time.Second, func() {
-			StopAndSummariseGame(correctGuesses, incorrectGuess)
-		})
 		fmt.Scanln(&guess)
 		t.Reset(3 * time.Second)
 		correctGuesses, incorrectGuess = manageScore(guess, answer, correctGuesses, incorrectGuess)
