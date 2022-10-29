@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/ajvarparadise/gophercises/urlshortener"
 )
 
 func main() {
